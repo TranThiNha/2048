@@ -1,10 +1,13 @@
 package com.example.mypc.a2048;
 
 import android.content.res.Resources;
+import android.media.MediaPlayer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.GridView;
@@ -25,11 +28,13 @@ public class MainActivity extends AppCompatActivity {
     List<Integer> valueList;
     int highScore = 2;
     float x1 = 0 ,y1=0,x2=0,y2=0;
-
+    MediaPlayer mediaPlayer;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        overridePendingTransition(R.anim.fadein,R.anim.fadeout);
         setContentView(R.layout.activity_main);
+        mediaPlayer = MediaPlayer.create(getApplicationContext(),R.raw.cat);
         rowList = new ArrayList<>();
         valueList = new ArrayList<>();
 
@@ -71,7 +76,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-
         Boolean isGameOver = false;
 
         switch (event.getAction())
@@ -89,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
                 y2 = event.getY();
 
                 //if left to right sweep event on screen
-                if (x2- x1>=180)
+                if (x2- x1>=120)
                 {
                     onEventLeftToRight();
                     RandomValue();
@@ -97,14 +101,14 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 // if right to left sweep event on screen
-                if (x1 - x2>=180)
+                if (x1 - x2>=120)
                 {
                     onEventRightToLeft();
                     RandomValue();
                 }
 
                 // if UP to Down sweep event on screen
-                if (y2 - y1>=180)
+                if (y2 - y1>=120)
                 {
 
                     onEventUpToDown();
@@ -112,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 //if Down to UP sweep event on screen
-                if (y1 - y2>=180)
+                if (y1 - y2>=120)
                 {
                     onEventDownToUp();
                     RandomValue();
@@ -151,16 +155,26 @@ public class MainActivity extends AppCompatActivity {
                                 {
                                     highScore =valueList.get(i*4+j);
                                 }
+
+                                int checkTemp = 0;
+
                                 for (int k = i*4; k<i*4+j; k++){
                                     if (valueList.get(k)==0){
+                                        checkTemp=1;
                                         valueList.set(k,valueList.get(i*4+j)+valueList.get(i*4+1+j+l));
                                         rowList.get(i*4+j).setText("");
                                         rowList.get(i*4+j).setBackgroundColor(resource.getColor(R.color.baseColor));
                                         rowList.get(k).setText(String.valueOf(valueList.get(i*4+j)));
                                         setColor(rowList.get(k),valueList.get(i*4+j));
                                         valueList.set(i*4+j,0);
+                                        onAssociateCell(rowList.get(k),valueList.get(i*4+j));
+
                                         break;
                                     }
+                                }
+
+                                if (checkTemp==0){
+                                    onAssociateCell(rowList.get(i*4+j),valueList.get(i*4+j));
                                 }
 
                                 break;
@@ -217,16 +231,24 @@ public class MainActivity extends AppCompatActivity {
                                 {
                                     highScore=valueList.get(i*4+3-j);
                                 }
+
+                                int checkTemp = 0;
+
                                 for (int k = i*4+3;k>i*4+3-j;k--){
                                     if (valueList.get(k)==0){
+                                        checkTemp=1;
                                         valueList.set(k,valueList.get(i*4+3-j)+valueList.get(i*4+2-j-l));
                                         rowList.get(i*4+3-j).setText("");
                                         rowList.get(i*4+3-j).setBackgroundColor(resource.getColor(R.color.baseColor));
                                         rowList.get(k).setText(String.valueOf(valueList.get(i*4+3-j)));
                                         setColor(rowList.get(k),valueList.get(i*4+3-j));
                                         valueList.set(i*4+3-j,0);
+                                        onAssociateCell(rowList.get(k),valueList.get(i*4+3-j));
                                         break;
                                     }
+                                }
+                                if (checkTemp==0){
+                                    onAssociateCell(rowList.get(i*4+3-j),valueList.get(i*4+3-j));
                                 }
                                 break;
                             }
@@ -283,17 +305,23 @@ public class MainActivity extends AppCompatActivity {
                                     highScore = valueList.get(i+4*j);
                                 }
 
+                                int checkTemp = 0;
+
                                 for (int k = i;k<i+4*j;k+=4){
                                     if (valueList.get(k)==0){
+                                        checkTemp=1;
                                         valueList.set(k,valueList.get(i+4*j));
                                         rowList.get(i+4*j).setText("");
                                         rowList.get(i+4*j).setBackgroundColor(resource.getColor(R.color.baseColor));
                                         rowList.get(k).setText(String.valueOf(valueList.get(i+4*j)));
                                         setColor(rowList.get(k),valueList.get(i+4*j));
                                         valueList.set(i+4*j,0);
+                                        onAssociateCell(rowList.get(k),valueList.get(i+4*j));
                                         break;
                                     }
                                 }
+
+                                if (checkTemp==0) onAssociateCell(rowList.get(i+4*j),valueList.get(i+4*j));
                                 break;
                             }
                             else {
@@ -341,21 +369,29 @@ public class MainActivity extends AppCompatActivity {
                                 rowList.get(i+4*(2-j-l)).setBackgroundColor(resource.getColor(R.color.baseColor));
                                 rowList.get(i+4*(3-j)).setText(String.valueOf(valueList.get(i+4*(3-j))));
                                 setColor(rowList.get(i+4*(3-j)),valueList.get(i+4*(3-j)));
+
                                 if (valueList.get(i+4*(3-j))>highScore)
                                 {
                                     highScore=valueList.get(i+4*(3-j));
                                 }
+
+                                int checkTemp = 0;
+
                                 for (int k = i+ NUMBER_OF_CELL-4;k>i+4*(3-j);k-=4){
                                     if (valueList.get(k)==0){
+                                        checkTemp =1;
                                         valueList.set(k,valueList.get(i+4*(3-j)));
                                         rowList.get(i+4*(3-j)).setText("");
                                         rowList.get(i+4*(3-j)).setBackgroundColor(resource.getColor(R.color.baseColor));
                                         rowList.get(k).setText(String.valueOf(valueList.get(i+4*(3-j))));
                                         setColor(rowList.get(k),valueList.get(i+4*(3-j)));
                                         valueList.set(i+4*(3-j),0);
+                                        onAssociateCell(rowList.get(k),valueList.get(i+4*(3-j)));
                                         break;
                                     }
                                 }
+                                if (checkTemp==0) onAssociateCell(rowList.get(i+4*(3-j)),valueList.get(i+4*(3-j)));
+
                                 break;
                             }
                             else {
@@ -526,7 +562,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    void onAssociateCell(TextView textView, int sum){
+        Animation anim = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.animation_cell);
+        textView.setAnimation(anim);
+        if (sum==64||sum==128 || sum==256|| sum==512 || sum == 1024 || sum == 2048){
+            mediaPlayer.start();
+        }
+    }
+
     void setColor(TextView textView, int sum){
+
         Resources resource = getApplicationContext().getResources();
         if (sum==2)textView.setBackgroundColor(resource.getColor(R.color.colorRow2));
         if (sum==4)textView.setBackgroundColor(resource.getColor(R.color.colorRow4));

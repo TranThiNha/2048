@@ -3,7 +3,7 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
-    <color name="baseColor">#AED6F1</color>
+    <color name="baseColor">#E8F8F5</color>
     <color name="colorRow2" >#FFEBEE</color>
     <color name="colorRow4" >#F8BBD0</color>
     <color name="colorRow8">#FF6699</color>
@@ -15,5 +15,6 @@
     <color name="colorRow512">#00897B</color>
     <color name="colorRow1024">#80DEEA</color>
     <color name="colorRow2048">#B0BEC5</color>
-
+    <color name="colorStart">#26C6DA</color>
+    <color name="colorHighScore">#F48FB1</color>
 </resources>
